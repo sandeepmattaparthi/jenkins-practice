@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'agent-1'}
+    agent { label 'AGENT-1' }
     environment { 
         PROJECT = 'EXPENSE'
         COMPONENT = 'BACKEND' 
@@ -7,7 +7,7 @@ pipeline {
     }
     options {
         disableConcurrentBuilds()
-        timeout(time: 20, unit: 'MINUTES')
+        timeout(time: 30, unit: 'MINUTES')
     }
     parameters{
         string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')
@@ -15,7 +15,7 @@ pipeline {
         booleanParam(name: 'TOGGLE', defaultValue: true, description: 'Toggle this value')
         choice(name: 'CHOICE', choices: ['One', 'Two', 'Three'], description: 'Pick something')
         password(name: 'PASSWORD', defaultValue: 'SECRET', description: 'Enter a password')
-        }
+    }
     stages {
         stage('Build') {
             steps {
@@ -53,11 +53,41 @@ pipeline {
                 parameters {
                     string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')
                 }
+            } 
+            when { 
+                environment name: 'DEPLOY_TO', value: 'production'
+            }
             steps {
                 script{
                  sh """
                     echo "Hello, this is deploy"
                  """
+                }
+            }
+        }
+        stage('Parallel Stages') {
+            parallel {
+                stage('STAGE-1') {
+                    
+                    steps {
+                        script{
+                            sh """
+                                echo "Hello, this is STAGE-1"
+                                sleep 15
+                            """
+                        }
+                    }
+                }
+                stage('STAGE-2') {
+                    
+                    steps {
+                        script{
+                            sh """
+                                echo "Hello, this is STAGE-2"
+                                sleep 15
+                            """
+                        }
+                    }
                 }
             }
         }
@@ -73,5 +103,5 @@ pipeline {
         success { 
             echo 'I will run when pipeline is success'
         }
-    }   
+    }
 }
