@@ -1,5 +1,14 @@
 pipeline {
     agent { label 'agent-1'}
+    environment { 
+        PROJECT = 'EXPENSE'
+        COMPONENT = 'BACKEND' 
+        DEPLOY_TO = "production"
+    }
+    options {
+        disableConcurrentBuilds()
+        timeout(time: 30, unit: 'MINUTES')
+    }
     stages {
         stage('Build') {
             steps {
